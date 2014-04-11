@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+{% block extrastyle %}
+    <style>
+    #user-tools{
+        display: none;
+    }
+    input, textarea, select, .form-row p{
+        font-size: 12px;
+    }
+    </style>
+{% endblock %}
+{##}
+{#{% block branding %}#}
+{#<h1 id="site-name">{% trans 'Django administration' %}</h1>#}
+{#{% endblock %}#}
+{% block userlinks %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        {% if title %} &rsaquo; {{ title }}{% endif %}
+        </div>
+{% endblock %}

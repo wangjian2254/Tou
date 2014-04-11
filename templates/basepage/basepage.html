@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    {% block title %}
+        <title>人才招聘系统</title>
+    {% endblock  %}
+    {% block keywords %}
+    {% endblock  %}
+    {% block desc %}
+    {% endblock  %}
+    {% block basecss %}
+        <link href="{{ STATIC_URL }}css/default.css" rel="stylesheet" type="text/css">
+        <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css">
+        <link href="{{ STATIC_URL }}css/commitlist.css" rel="stylesheet" type="text/css">
+    {% endblock  %}
+    {% block basejs %}
+{#            <script src="{{ STATIC_URL }}jquery/jquery-1.7.2.min.js"></script>#}
+{#            <script src="{{ STATIC_URL }}jquery/jquery-ui-1.8.20.custom.min.js"></script>#}
+            <script src="{{ STATIC_URL }}js/jquery.js"></script>
+            <script type="text/javascript">
+                var $j = jQuery.noConflict();
+            </script>
+            <script src="{{ STATIC_URL }}js/json2.js"></script>
+            <script src="{{ STATIC_URL }}js/table.js"></script>
+            <script src="{{ STATIC_URL }}js/val.js"></script>
+            <script src="{{ STATIC_URL }}js/artDialog.js?skin=blue"></script>
+
+            <script type="text/javascript">
+        $j(function(){
+        result_alert2('{{ result }}','{{ msg }}');
+        });
+        </script>
+
+    {% endblock  %}
+</head>
+<body class="div_c">
+    {% include "include/top.html" %}
+{% block content %}
+{% endblock  %}
+    {% include "include/bottom.html" %}
+</body>
+</html>

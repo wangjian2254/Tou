@@ -1,0 +1,57 @@
+{% extends "basepage/basepage.html" %}
+
+{% block title %}
+    <title>{{ subject.title }}投票——神州浩天工会 </title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+
+        $j("#form1")[0].submit();
+    }
+
+</script>
+    <div class="con_center" >
+    <form id="form1" action="/toupiao/toupiaoPage/" method="post">
+        <table id="jianli_table" class="table0 bigtable tdpadding tablemargin" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr >
+                <td align="left" colspan="3">
+                    <b>投票：{{ subject.title }}</b><input type="hidden" name="subjectid" value="{{ subject.id|default_if_none:"" }}">
+
+                </td>
+
+            </tr>
+            <tr>
+                <td align="center" style=" height: 130px ">
+
+                    {% ifequal type 'error' %}
+                        <p>本投票是单选投票，您提交了多个选项。</p><p><a href="/toupiao/showTouPiao/?subjectid={{ subject.pk }}" class="commit_btn">重新投票</a></p>
+                    {% endifequal %}
+                    {% ifequal type 'duoerror' %}
+                        <p>本投票最多允许投{{ subject.num }}票，您提交了过多选项。</p><p><a href="/toupiao/showTouPiao/?subjectid={{ subject.pk }}" class="commit_btn">重新投票</a></p>
+                    {% endifequal %}
+                    {% ifequal type 'erroruser' %}
+                        <p>本投票是记名投票，请登录后再投票。</p><p><a href="/accounts/login/" class="commit_btn">登录</a></p>
+                    {% endifequal %}
+                    {% ifequal type 'chongfu' %}
+                        <p>每个用户只能投票一次</p><p><a href="/toupiao/toupiaoResult/?subjectid={{ subject.pk }}" class="commit_btn" >投票结果</a></p>
+                    {% endifequal %}
+                    {% ifequal type 'wuquanxian' %}
+                        <p>您不在投票人群内</p><p><a href="/toupiao/toupiaoResult/?subjectid={{ subject.pk }}" class="commit_btn" >投票结果</a></p>
+                    {% endifequal %}
+                    {% ifequal type 'dateout' %}
+                        <p>已经超过最后投票期限。</p><p><a href="/toupiao/toupiaoResult/?subjectid={{ subject.pk }}" class="commit_btn" >投票结果</a></p>
+                    {% endifequal %}
+                </td>
+
+            </tr>
+
+        </table>
+    </form>
+
+    </div>
+
+
+
+
+{% endblock  %}

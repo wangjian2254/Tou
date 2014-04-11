@@ -1,0 +1,19 @@
+<div id="top">
+<div style="float: left;padding-left: 50px;">
+    <a href="/"  class="topfont">神州浩天投票系统</a>&nbsp;&nbsp;&nbsp;
+    <a href="/"  class="topfont">正在投票列表</a>&nbsp;&nbsp;&nbsp;
+    <a href="/toupiao/endnewslist/"  class="topfont">已结束投票列表</a>&nbsp;&nbsp;&nbsp;
+    {% if user.is_staff %}
+    <a href="/adminlogin/"  class="topfont">后台管理</a>
+    {% endif %}
+</div>
+
+    {% if user.is_authenticated %}
+        <span class="topfont">{{ user.person.truename }}</span>&nbsp;<span class="topfont">{{ user.person.depate.name }}</span>&nbsp;<span class="topfont">|</span>&nbsp;<span class="topfont"><a href="/toupiao/repassword/">修改密码</a></span>&nbsp;<span class="topfont">|</span>&nbsp;<a href="/accounts/logout/"  class="topfont">退出</a>&nbsp;&nbsp;
+    {% else %}
+        <a href="/accounts/login/"  class="topfont">登录</a>&nbsp;&nbsp;&nbsp;
+    {% endif %}
+&nbsp;&nbsp;&nbsp;
+</div>
+<div id="top_tihuan"><a name="top"></a></div>
+

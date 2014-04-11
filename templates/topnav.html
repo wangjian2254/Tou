@@ -1,0 +1,49 @@
+﻿<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>神州浩天投票系统</title>
+<link rel="stylesheet" href="{{STATIC_URL}}css/hepu.css" type="text/css">
+<style type="text/css">
+<!--
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color: #87ceeb;
+}
+a:link {
+	color: #FFFFFF;
+}
+a:visited {
+	color: #FFFFFF;
+}
+a:hover {
+	color: #FFFFFF;
+}
+.STYLE1 {color: #FFFFFF}
+-->
+</style></head>
+
+<body>
+<table width="100%" border="0" cellspacing="1" cellpadding="0">
+  <tr>
+    <td width="43%" height="50"><font style="color:#ffffff;font-family:黑体;font-size:25;margin-left:30px;">神州浩天投票系统V1.0</font></td>
+    <td width="57%" align="right"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+      <td><h5><span class="STYLE1">
+<a href="/" target="_parent">投票列表</a>
+          </span></h5>
+      </td>
+        <td >
+		<h5 align="right"><span class="STYLE1"><a >欢迎 <b>{{ user.get_full_name }}</b> {% if user.person and user.person.male %}先生{% else %}女士{% endif %}登录测试协同系统！</a>&nbsp;|&nbsp;<a href="/accounts/logout/?next=/" target="_parent">退出系统</a> &nbsp;</span></h5></td>
+        <td width="106">
+		<div align="center">
+
+		</div></td>
+      </tr>
+    </table></td>
+  </tr>
+  
+</table>
+</body>
+</html>

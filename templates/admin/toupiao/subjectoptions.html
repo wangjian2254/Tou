@@ -1,0 +1,70 @@
+{% extends "basepage/basepage2.html" %}
+
+{% block title %}
+    <title>设置{{ subject.title }}选项 </title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+        $j("#form1")[0].submit();
+    }
+
+</script>
+    <div class="con_center" >
+    <form id="form1" action="/toupiao/savesubjectoption/" method="post">
+        <table id="jianli_table" class="table0 bigtable tdpadding tablemargin" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr >
+                <td align="right" colspan="3">
+                    <a href="/admin/toupiao/subject/{{ subject.pk }}/"   class="commit_btn"  >返回</a>
+                </td>
+
+            </tr>
+            <tr >
+                <td align="left" colspan="2">
+                    <b>投票：{{ subject.title }}</b><input type="hidden" name="subjectid" value="{{ subject.id|default_if_none:"" }}">
+
+                </td>
+                <td align="center" style=" width: 80px "><label style="height: 20px;line-height: 20px;">保留</label>
+                </td>
+            </tr>
+        {% for opt in options %}
+            <tr>
+                <td align="right" style=" width: 100px ">
+                   {{ forloop.counter }}.
+                </td>
+                <td >
+                    <input type="text" name="option{{ opt.pk }}" style="width: 90%"   value="{{ opt.content|default_if_none:"" }}">
+                </td>
+                <td align="center"  >
+                   <input type="checkbox" name="selectoption" style="width: 30px;" value="{{ opt.pk }}" checked></td>
+            </tr>
+        {% endfor %}
+        {% for item in newitems %}
+            <tr>
+                <td align="right" style=" width: 100px ">
+                  新选项： {{ forloop.counter|add:oldcount }}.
+                </td>
+                <td  >
+                    <input type="text" name="newoption{{ forloop.counter }}"  style="width: 90%"  />
+                </td>
+            <td align="center">
+
+                </td>
+            </tr>
+        {% endfor %}
+
+            <tr>
+                <td align="center" colspan="4">
+                    <a href="#" onclick="submitForm()"  class="commit_btn" >保存</a>
+
+                 <input type="hidden" style="width: 100px;" value="保存" onclick="submitForm()">{% csrf_token %}
+
+                </td>
+
+            </tr>
+        </table>
+    </form>
+    </div>
+
+
+{% endblock  %}

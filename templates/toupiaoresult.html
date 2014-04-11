@@ -1,0 +1,55 @@
+{% extends "basepage/basepage.html" %}
+{% load toupiao_filter %}
+{% load ueditor_filter %}
+{% block title %}
+    <title>{{ subject.title }}投票——神州浩天工会 </title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+
+        $j("#form1")[0].submit();
+    }
+
+</script>
+    <div class="con_center" >
+    <form id="form1" action="/toupiao/toupiaoPage/" method="post">
+        <table id="jianli_table" class="table0 bigtable tdpadding tablemargin" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr >
+                <td align="left" colspan="3">
+                    <b>投票：{{ subject.title }}</b><input type="hidden" name="subjectid" value="{{ subject.id|default_if_none:"" }}">
+                    {% if user.is_staff and user.is_active %}
+                        <a href="/toupiao/toupiaoExcel/?subjectid={{ subject.pk }}"   class="commit_btn" >导出Excel</a>
+                    {% endif %}
+                </td>
+
+            </tr>
+        {% for opt in optionlist %}
+            <tr>
+                <td align="right" style=" width: 30px ">
+                   {{ forloop.counter }}.
+                </td>
+                <td style="width: 300px;">
+                    {{ opt.option.content|default_if_none:"" }}
+                </td>
+                <td style="text-align: left;">
+                    <span style="background-color:lightgreen;display: block;width: {%  widthratio opt.num total 100 %}%;"><b style="margin-left: 10px;">{{ opt.num }}（{%  widthratio opt.num total 100 %}%）</b></span>
+                </td>
+
+            </tr>
+        {% endfor %}
+
+        </table>
+    </form>
+    {{ subject.content|safe }}
+    </div>
+
+{% if subject.isReplay %}
+    <div class="con_center" >
+            {% include 'comment/comment.html' %}
+        </div>
+    <div class="con_center" >
+            {% include 'comment/commentlist.html' %}
+        </div>
+{% endif %}
+{% endblock  %}

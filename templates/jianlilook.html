@@ -1,0 +1,66 @@
+{% extends "basepage/basepage.html" %}
+{% load toupiao_filter %}
+{% load ueditor_filter %}
+{% block title %}
+    <title>{{ subject.title }}投票——神州浩天工会 </title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+
+        $j("#form1")[0].submit();
+    }
+
+</script>
+    <div class="con_center" >
+    <form id="form1" action="/toupiao/toupiaoPage/" method="post">
+        <table id="jianli_table" class="table0 bigtable tdpadding tablemargin" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr >
+                <td align="left" colspan="3">
+                    <b>投票：{{ subject.title }}</b><input type="hidden" name="subjectid" value="{{ subject.id|default_if_none:"" }}">
+
+                </td>
+
+            </tr>
+        {% for opt in options %}
+            <tr>
+                <td align="right" style=" width: 30px ">
+                   {{ forloop.counter }}.
+                </td>
+                <td align="right" style=" width: 50px ">
+
+                  <input {% if subject.single %}type="radio"{% else %}type="checkbox" {% endif %} name="selectoption" style="width: 30px;" value="{{ opt.pk }}" >
+                </td>
+                <td >
+                    {{ opt.content|default_if_none:"" }}
+                </td>
+
+            </tr>
+        {% endfor %}
+            <tr>
+                <td align="center" colspan="4">
+                    {% if needTou %}
+                         <a href="#" onclick="submitForm()"  class="commit_btn" >投票</a>
+                    {% else %}
+                         您不在投票人群之内.<a href="/toupiao/toupiaoResult/?subjectid={{ subject.pk }}"   class="commit_btn" >投票结果</a>
+                    {% endif %}
+
+                 <input type="hidden" style="width: 100px;" value="保存" onclick="submitForm()">{% csrf_token %}
+
+                </td>
+
+            </tr>
+        </table>
+    </form>
+    {{ subject.content|safe }}
+    </div>
+{% if subject.isReplay %}
+    <div class="con_center" >
+            {% include 'comment/comment.html' %}
+        </div>
+    <div class="con_center" >
+            {% include 'comment/commentlist.html' %}
+        </div>
+{% endif %}
+
+{% endblock  %}

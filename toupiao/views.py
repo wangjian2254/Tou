@@ -189,6 +189,7 @@ def toupiaoResult(request):
                                                                              'subject': subject,
                                                                              'optionlist': optionlist,
                                                                              'total': totalnum}))
+
 @permission_required
 def initUser(request):
     import json,os
@@ -372,3 +373,14 @@ def commentList(request):
         replaylist.append(rmap)
     html = json.dumps(replaylist)
     return HttpResponse(html)
+
+
+
+@permission_required
+def initUserPassword(request):
+
+    for user in User.objects.all():
+        user.set_password('111111')
+        user.save()
+
+    return HttpResponse(u'全部用户的密码都改为了：111111')

@@ -1,6 +1,7 @@
-{% load i18n %}
+{% load i18n admin_urls %}
 <div class="submit-row">
 {% if show_delete_link %}<p class="deletelink-box"><a href="delete/" class="deletelink">{% trans "Delete" %}</a></p>{% endif %}
 {% if show_save_and_continue %}<input type="submit" value="{% trans 'Save' %}" class="default" name="_continue" {{ onclick_attrib }}/>{% endif %}
 {% if show_save_option %}<input type="button" value="设置投票选项"   {{ onclick_attrib }} onclick="gotoOption({{ obj_id }})"/>{% endif %}
+{% if show_modify_joins %}<input type="button" value="导入参与投票人员"   {{ onclick_attrib }} onclick="gotoImportExcel({{ obj_id }})"/>{% endif %}
 </div>

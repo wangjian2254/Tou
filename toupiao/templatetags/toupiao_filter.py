@@ -1,5 +1,6 @@
 #coding=utf-8
 import urllib
+from toupiao.models import Subject
 
 __author__ = '王健'
 
@@ -44,14 +45,17 @@ def submit_row_option(context):
     change = context['change']
     is_popup = context['is_popup']
     save_as = context['save_as']
+    importexcel = False
     obj_id=''
     if context.has_key('object_id'):
         obj_id=context['object_id']
+    if obj_id :
+        sub = Subject.objects.get(pk=obj_id)
+        if sub.isUser:
+            importexcel = True
     return {
-        'onclick_attrib': (opts.get_ordered_objects() and change
-                            and 'onclick="submitOrderForm();"' or ''),
         'show_delete_link': (not is_popup and context['has_delete_permission']
-                              and (change or context['show_delete'])),
+                              and change and context.get('show_delete', True)),
         'show_save_as_new': not is_popup and change and save_as,
         'show_save_and_add_another': context['has_add_permission'] and
                             not is_popup and (not save_as or context['add']),
@@ -59,6 +63,7 @@ def submit_row_option(context):
         'is_popup': is_popup,
         'show_save': True,
         'obj_id':obj_id,
-        'show_save_option':context.has_key('object_id')
+        'show_modify_joins':importexcel
+        # 'show_save_option':context.has_key('object_id')
 
     }

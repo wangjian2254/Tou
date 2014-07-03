@@ -29,10 +29,10 @@ class SubjectForm(forms.ModelForm):
 
     def clean(self):
         isuser = self.cleaned_data.get('isUser', None)
-        if isuser:
-            joins = self.cleaned_data.get('joins', None)
-            if len(joins) == 0:
-                self._errors['joins'] = ErrorList([u'请选择投票范围'])
+        # if isuser:
+        #     joins = self.cleaned_data.get('joins', None)
+        #     if len(joins) == 0:
+        #         self._errors['joins'] = ErrorList([u'请选择投票范围'])
         return self.cleaned_data
 
     class Meta:

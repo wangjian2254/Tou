@@ -1,0 +1,91 @@
+{% extends "basepage/basepage2.html" %}
+
+{% block title %}
+    <title>设置{{ subject.title }}参与人员 </title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+        $j("#form1")[0].submit();
+    }
+
+</script>
+    <div class="con_center" >
+        <table id="jianli_table" class="table0 bigtable tdpadding tablemargin" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr >
+                <td align="right" colspan="4">
+                    <a href="/admin/toupiao/subject/{{ subject.pk }}/"   class="commit_btn"  >返回</a>
+                </td>
+
+            </tr>
+            <tr >
+                <td align="left" colspan="4">
+                    <b>投票：{{ subject.title }}</b><input type="hidden" name="subjectid" value="{{ subject.id|default_if_none:"" }}">
+
+                </td>
+
+            </tr>
+            <tr>
+                <td width="60px" align="center" >
+                   参与人：
+                </td>
+                <td colspan="2"  >
+                    <form style="border: 0;" id="form1" action="/toupiao/uploadsubjectjoins/?subjectid={{ subject.pk }}" method="post" enctype="multipart/form-data">
+                    <input type="file" name="excel" style="width: 100%;">
+                    </form>
+                </td>
+
+                <td width="30px" align="center" >
+                    <a href="#" onclick="submitForm()"  class="commit_btn" >上传</a>
+
+                </td>
+
+            </tr>
+        <tr >
+                <td align="right" colspan="4">
+                    <a href="/static/img/toupiaodemo.xls"  class="commit_btn"  >Excel范例</a>
+                </td>
+
+            </tr>
+            <tr>
+                <td  align="center">
+                   序号
+                </td>
+                <td align="center" width="120px" >
+                   部门
+                </td>
+               <td align="center">
+                   员工
+                </td>
+
+                <td align="center">
+                   操作
+                </td>
+
+            </tr>
+        {% for depate,num,person in joins %}
+            <tr>
+                <td align="center" >
+                   {{ forloop.counter }}.
+                </td>
+                {% if depate %}
+                <td  align="center" rowspan="{{ num }}">
+                   {{ depate }}
+                </td>
+                {% endif %}
+                <td align="center">
+                    {{ person.truename }}
+                </td>
+                <td align="center"  >
+                   <a href="/toupiao/deletesubjectjoins/?subjectid={{ subject.pk }}&pid={{ person.id }}">删除</a>
+                </td>
+            </tr>
+        {% endfor %}
+
+
+
+        </table>
+    </div>
+
+
+{% endblock  %}

@@ -12,6 +12,9 @@
 function gotoOption(pk){
     window.location.href="/toupiao/showsubjectoption/?subjectid="+pk;
 }
+function gotoImportExcel(pk){
+    window.location.href="/toupiao/showsubjectjoins/?subjectid="+pk;
+}
 </script>
 {% endblock %}
 
@@ -70,7 +73,7 @@ function gotoOption(pk){
 
 {% block after_related_objects %}{% endblock %}
 
-{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+{% block submit_buttons_bottom %}{% submit_row_option %}{% endblock %}
 
 {% if adminform and add %}
    <script type="text/javascript">document.getElementById("{{ adminform.first_field.id_for_label }}").focus();</script>

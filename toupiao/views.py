@@ -2,7 +2,9 @@
 # Create your views here.
 import json
 import datetime
+import uuid
 from django.contrib.auth.decorators import login_required
+from Tou.settings import MEDIA_ROOT
 from toupiao.tools import permission_required
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.paginator import Paginator
@@ -75,7 +77,106 @@ def showsubjectoption(request):
     return render_to_response('admin/toupiao/subjectoptions.html', RequestContext(request, {'newitems': range(10),
                                                                                             'options': options,
                                                                                             'oldcount': options.count(),
-                                                                                            'subject': subject}))
+                                                                                          'subject': subject}))
+@permission_required
+def showsubjectjoins(request):
+    subjectid = request.REQUEST.get('subjectid')
+    subject = Subject.objects.get(pk=subjectid)
+    joins = subject.joins.all()
+    users = []
+    d = {}
+    for u in joins.order_by('depate'):
+        if d.has_key(unicode(u.depate)):
+            users.append((False,False,u))
+        else:
+            users.append((unicode(u.depate),joins.filter(depate=u.depate).count(),u))
+        d[unicode(u.depate)] = True
+
+    return render_to_response('admin/toupiao/subjectjoins.html', RequestContext(request, {'joins': users,
+                                                                                  'subject': subject,"msg":request.REQUEST.get("msg",""),"result":request.REQUEST.get("result","")}))
+@permission_required
+def uploadsubjectjoins(request):
+    sid = request.REQUEST.get("subjectid")
+    if not request.FILES.has_key('excel'):
+        return HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"warning",u"请上传Excel文件，格式为2003版。"))
+
+    f=request.FILES["excel"]
+
+    if f.name.lower().find('.xls')<0:
+        return HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"warning",u"请上传Excel文件，格式为2003版。"))
+    fpath= MEDIA_ROOT+'upload/'+str(uuid.uuid4())+'.xls'
+    try:
+        fileatt=open(fpath,'wb+')
+        for chunk in f.chunks():
+            fileatt.write(chunk)
+        fileatt.close()
+        # from xpinyin import Pinyin
+        import xlrd
+        # p=Pinyin()
+
+        book = xlrd.open_workbook(fpath)
+        sheet=book.sheet_by_name(book.sheet_names()[0])
+        rownum=sheet.nrows
+        depatedict={}
+        emptyusers=[]
+        depate = None
+        truenamedict = {}
+        for i in range(1,rownum):
+            row_data = sheet.row_values(i,0,2)
+            if row_data[0]:
+                depate = row_data[0].strip().split('\n')[0].split('\r')[0]
+            nickname = row_data[1].strip()
+            if truenamedict.has_key(nickname):
+                return  HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"warning",u"文件中有重复的姓名：%s"%nickname))
+
+            truenamedict[nickname]=True
+            if depate:
+                if not depatedict.has_key(depate):
+                    depatedict[depate] = []
+                depatedict[depate].append(nickname)
+            else:
+                emptyusers.append(nickname)
+        subject = Subject.objects.get(pk=sid)
+        subject.joins.clear()
+        for n in emptyusers:
+            u,c = User.objects.get_or_create(username=n)
+            if c:
+                u.set_password('111111')
+                u.save()
+                p = Person()
+                p.user = u
+            else:
+                p = u.person
+            p.truename = n
+            p.save()
+            subject.joins.add(p)
+        for d,ns in depatedict.items():
+            dep,c = Depatement.objects.get_or_create(name=d)
+            if c:
+                dep.save()
+            for n in ns:
+                u,c = User.objects.get_or_create(username=n)
+                if c:
+                    u.set_password('111111')
+                    u.save()
+                    p = Person()
+                    p.user = u
+                else:
+                    p = u.person
+                p.truename = n
+                p.depate = dep
+                p.save()
+                subject.joins.add(p)
+        return HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"succeed",u"导入成功"))
+    except Exception,e:
+            import os
+            if  os.path.isfile(fpath):
+                os.remove(fpath)
+            raise e
+    else:
+        import os
+        if  os.path.isfile(fpath):
+            os.remove(fpath)
 
 
 @permission_required

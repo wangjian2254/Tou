@@ -6,7 +6,7 @@ Created on 2011-3-19
 '''
 from django.conf.urls import patterns
 from toupiao.views import top, menu, welcome, savesubjectoption, showsubjectoption, showTouPiao, toupiaoPage, toupiaoResult, endnewslist,toupiaoerror, repassword, toupiaoExcel, initUser, \
-    initUserPassword
+    initUserPassword, showsubjectjoins, uploadsubjectjoins
 
 
 urlpatterns = patterns('^toupiao/$',
@@ -15,6 +15,8 @@ urlpatterns = patterns('^toupiao/$',
                        (r'^welcome/$', welcome),
                        (r'^savesubjectoption/$', savesubjectoption),
                        (r'^showsubjectoption/$', showsubjectoption),
+                       (r'^showsubjectjoins/$', showsubjectjoins),
+                       (r'^uploadsubjectjoins/$', uploadsubjectjoins),
                        (r'^showTouPiao/$', showTouPiao),
                        (r'^toupiaoPage/$', toupiaoPage),
                        (r'^toupiaoResult/$', toupiaoResult),

@@ -9,6 +9,12 @@
         $j("#form1")[0].submit();
     }
 
+    function delPerson(sid,pid,n){
+        art.dialog({id:'msg',title:'提示',content:"确认移除："+n,icon:'warning',lock: true,cancel:true,okVal:'移除',ok:function(){
+            window.location="/toupiao/deletesubjectjoins/?subjectid="+sid+"&pid="+pid;
+        }});
+    }
+
 </script>
     <div class="con_center" >
         <table id="jianli_table" class="table0 bigtable tdpadding tablemargin" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -77,7 +83,7 @@
                     {{ person.truename }}
                 </td>
                 <td align="center"  >
-                   <a href="/toupiao/deletesubjectjoins/?subjectid={{ subject.pk }}&pid={{ person.id }}">删除</a>
+                   <a href="javascript:delPerson({{ subject.pk }},{{ person.id }},'{{ person.truename }}');">移除</a>
                 </td>
             </tr>
         {% endfor %}

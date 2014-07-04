@@ -94,6 +94,21 @@ def showsubjectjoins(request):
 
     return render_to_response('admin/toupiao/subjectjoins.html', RequestContext(request, {'joins': users,
                                                                                   'subject': subject,"msg":request.REQUEST.get("msg",""),"result":request.REQUEST.get("result","")}))
+
+@permission_required
+def deletesubjectjoins(request):
+    sid = request.REQUEST.get("subjectid")
+    pid = request.REQUEST.get("pid")
+    if sid and pid:
+        subject = Subject.objects.get(pk=sid)
+        person = Person.objects.get(pk=pid)
+        subject.joins.remove(person)
+        return HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"succeed",u"移除 %s 成功。"%person.truename))
+    else:
+        return HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"warning",u"操作失败"))
+
+
+
 @permission_required
 def uploadsubjectjoins(request):
     sid = request.REQUEST.get("subjectid")

@@ -162,6 +162,9 @@ def uploadsubjectjoins(request):
                 p.user = u
             else:
                 p = u.person
+            if not p:
+                p = Person()
+                p.user = u
             p.truename = n
             p.save()
             subject.joins.add(p)
@@ -178,6 +181,9 @@ def uploadsubjectjoins(request):
                     p.user = u
                 else:
                     p = u.person
+                if not p:
+                    p = Person()
+                    p.user = u
                 p.truename = n
                 p.depate = dep
                 p.save()
@@ -221,8 +227,11 @@ def showTouPiao(request):
     subject = Subject.objects.get(pk=subjectid)
     options = Option.objects.filter(subject=subject).order_by('id')
     needTou=True
-    if not subject.isNoName and subject.isUser and subject.joins.filter(user=request.user).count()==0:
+    if not subject.isNoName and request.user.is_anonymous():
         needTou=False
+    elif subject.isUser and subject.joins.filter(user=request.user).count()==0:
+        needTou=False
+
     return render_to_response('jianlilook.html', RequestContext(request, {'obj': subject, 'objtype': 'subject','needTou':needTou,
                                                                           'options': options, 'subject': subject}))
 

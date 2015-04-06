@@ -1,0 +1,18 @@
+{% extends "basepage/basepage.html" %}
+{% block title %}
+        <title>投票列表——神州浩天工会</title>
+{% endblock  %}
+{% block content %}
+<div id="player5" style="width:800px;height: 600px; margin:0px; border:solid 5px #50031a;color:#ffffff;" >极酷Flvplayer播放器,更多例子请访问:<br />
+<script type="text/javascript" src="/static/swfobject.js"></script>
+<script type="text/javascript">
+	var s5 = new SWFObject("/static/FlvPlayer201002.swf","playlist","300","210","7");
+	s5.addParam("allowfullscreen","true");
+	s5.addVariable("autostart","true");
+	s5.addVariable("image","flashM-cebbank.jpg");
+	s5.addVariable("file","{{ movie.movie.url }}");
+	s5.addVariable("width","800");
+	s5.addVariable("height","600");
+	s5.write("player5");
+</script>
+{% endblock %}

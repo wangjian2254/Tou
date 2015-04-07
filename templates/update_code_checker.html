@@ -1,0 +1,72 @@
+{% extends "basepage/basepage.html" %}
+{% block title %}
+        <title>视频列表</title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+
+        $j("#form1")[0].submit();
+    }
+
+</script>
+     <div class="con_center" >
+
+            <div style="width: 100%;">
+            <table class="tablemargin" width="100%" height="100%" border="0" cellspacing="0"
+                			cellpadding="0">
+
+
+            <tr>
+                <td valign="top">
+                <form id="form1" action="/yzxmanage/update_code_checker/" method="post">
+            <table id="worklist" class="table0 tdpadding" width="100%" cellpadding="0" cellspacing="0" border="0">
+{#                <tr >#}
+{#                <td width="50px" align="center"  >#}
+{#                        序号#}
+{#                    </td>#}
+{#                    <td align="center" >#}
+{#                        视频#}
+{#                    </td>#}
+{#                    <td width="170px" align="center" >#}
+{#                        时间#}
+{#                    </td>#}
+{##}
+{#                </tr>#}
+                {% for user in userlist%}
+                <tr>
+                    <td align="center" style="width: 20px;" >{{ forloop.counter }}</td>
+                    <td class="btn" colspan="2"  >{{ user.first_name }}</td>
+                </tr>
+                <tr>
+                    <td align="btn"  colspan="3" >
+
+                        {% for au in userlist %}
+                            <input type="checkbox" name="{{ user.pk }}" value="{{ au.pk }}" style="width:20px;"
+                            {% for u in user.dafen_user_checker.all %}
+                                 {% ifequal u.to_user_id au.pk %}
+                                   {% ifequal u.is_active True %}
+                                   checked="checked"
+                                   {% endifequal %}
+                                 {% endifequal %}
+                            {% endfor %}
+                            > <label>{{ au.first_name }}</label>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td align="center" colspan="3"><a href="#" onclick="submitForm()"  class="commit_btn" >保存</a>{% csrf_token %} </td>
+                </tr>
+            </table>
+                </form>
+            </td>
+            </tr>
+            </table>
+            </div>
+    </div>
+
+<script type="text/javascript">
+    senfe("worklist","#f6f6f6","#fff","#d9ebf5","#aed6fc");
+</script>
+{% endblock  %}

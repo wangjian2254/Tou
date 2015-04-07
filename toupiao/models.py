@@ -1,36 +1,47 @@
-#coding=utf-8
-from datetime import datetime
-from django.contrib.auth.models import User
+# coding=utf-8
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
 # Create your models here.
+from django.utils import timezone
+
 
 class Depatement(models.Model):
-    name = models.CharField(max_length=10, unique=True,verbose_name=u'部门名称', help_text=u'部门名称')
+    name = models.CharField(max_length=10, unique=True, verbose_name=u'部门名称', help_text=u'部门名称')
+    father = models.ForeignKey('Depatement', null=True, verbose_name=u'父级部门')
+    flag = models.CharField(max_length=20, unique=True, null=True, verbose_name=u'唯一标示', help_text=u'特殊模块使，例如研发部的代码走查')
 
     def __unicode__(self):
         return self.name
+
     class Meta():
         verbose_name = u'部门'
         verbose_name_plural = u'部门列表'
 
-class Person(models.Model):
+
+class Person(AbstractUser):
     choices = ((True, u'女'), (False, u'男'))
-    user = models.OneToOneField(User, verbose_name=u'账户',help_text=u'登录账户')
-    truename=models.CharField(max_length=10,verbose_name=u'姓名',help_text=u'员工姓名')
+    # rtx_username = models.CharField(max_length=20, unique=True, null=True, verbose_name=u'腾讯通账号', help_text=u'腾讯通账号，方便推送')
     depate = models.ForeignKey(Depatement, blank=True, null=True, verbose_name=u'部门', help_text=u'隶属部门')
-    male = models.BooleanField(choices=choices,default=True, verbose_name=u'性别', help_text=u'性别')
+    male = models.BooleanField(choices=choices, default=True, verbose_name=u'性别', help_text=u'性别')
+
+
+    def save(self, **kwargs):
+        if len(self.password) < 15:
+            self.set_password(self.password)
+        super(Person, self).save(**kwargs)
+
 
     def __unicode__(self):
-        return u'%s_%s' % (self.user.get_full_name(), (self.depate and [self.depate.name] or [u'空'])[0])
-    def save(self, force_insert=False, force_update=False, using=None):
-        self.user.first_name=self.truename
-        self.user.save()
-        super(Person, self).save(force_insert=False, force_update=False, using=None)
+        return u'%s_%s' % (self.get_full_name(), (self.depate and [self.depate.name] or [u'空'])[0])
+
+
 
     class Meta():
         verbose_name = u'员工'
         verbose_name_plural = u'员工列表'
+
 
 class Subject(models.Model):
     choices = ((True, u'已发布'), (False, u'未发布'))
@@ -44,7 +55,7 @@ class Subject(models.Model):
     endDate = models.DateTimeField(verbose_name=u'结束日期', help_text=u'结束投票日期')
 
     joins = models.ManyToManyField(Person, blank=True, null=True, verbose_name=u'投票范围', help_text=u'允许投票的人员')
-    isUser = models.BooleanField(choices=joinchoices,default=False,verbose_name=u'是否限定投票范围',help_text=u'是否限定特定人群投票')
+    isUser = models.BooleanField(choices=joinchoices, default=False, verbose_name=u'是否限定投票范围', help_text=u'是否限定特定人群投票')
     isPub = models.BooleanField(choices=choices, default=True, verbose_name=u'是否发布投票', help_text=u'将投票发布出去，让用户投票')
     isNoName = models.BooleanField(default=False, verbose_name=u'是否匿名', help_text=u'选中为匿名投票，匿名投票无需登录')
     isReplay = models.BooleanField(default=False, verbose_name=u'是否允许评论', help_text=u'选中为匿名投票，是否开启评论功能？')
@@ -59,9 +70,9 @@ class Subject(models.Model):
     def was_published_recently(self):
         if not self.isPub:
             return u'已经关闭'
-        if self.startDate > datetime.now():
+        if self.startDate > timezone.now():
             return u'未到开始投票时间'
-        elif self.startDate < datetime.now() < self.endDate:
+        elif self.startDate < timezone.now() < self.endDate:
             return u'正在投票'
         else:
             return u'投票已经关闭'
@@ -85,14 +96,14 @@ class Option(models.Model):
 
 
 class Toupiao(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True, verbose_name=u'投票人', help_text=u'匿名情况，无需登录')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=u'投票人', help_text=u'匿名情况，无需登录')
     dateTime = models.DateTimeField(auto_created=True, verbose_name=u'投票发生时间')
     subject = models.ForeignKey(Subject, verbose_name=u'投票的主题', help_text=u'针对哪一个主题的投票')
     options = models.ManyToManyField(Option, verbose_name=u'选项', help_text=u'可包含多选，多选时可以多头')
 
 
 class Replay(models.Model):
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     face = models.IntegerField(default=1, verbose_name=u'表情')
     objid = models.IntegerField(verbose_name=u'评论的目标id')
     father_id = models.IntegerField(verbose_name=u'对评论的评论', blank=True, null=True)

@@ -4,6 +4,7 @@ import json
 import datetime
 import uuid
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from Tou.settings import MEDIA_ROOT
 from toupiao.tools import permission_required
 from django.contrib.auth.models import AnonymousUser, User
@@ -266,11 +267,11 @@ def toupiaoPage(request):
 
     if request.session.has_key('subjectlist') and subjectid in request.session['subjectlist']:
         return HttpResponseRedirect('/toupiao/error/?type=chongfu&subjectid=%s' % subjectid)
-    if subject.startDate > datetime.datetime.now() or subject.endDate < datetime.datetime.now():
+    if subject.startDate > timezone.now() or subject.endDate < timezone.now():
         return HttpResponseRedirect('/toupiao/error/?type=dateout&subjectid=%s' % subjectid)
     if not request.session.has_key('subjectlist'):
-        request.session['subjectlist'] = set()
-        sessionset = set()
+        request.session['subjectlist'] = []
+        sessionset = []
     else:
         sessionset = request.session['subjectlist']
     optionslist = Option.objects.filter(pk__in=selectoption)
@@ -282,12 +283,12 @@ def toupiaoPage(request):
         if 0<Toupiao.objects.filter(subject=subject).filter(user=request.user).count():
             return HttpResponseRedirect('/toupiao/error/?type=chongfu&subjectid=%s' % subjectid)
     toupiao.subject = subject
-    toupiao.dateTime = datetime.datetime.now()
+    toupiao.dateTime = timezone.now()
     toupiao.save()
     for opt in optionslist:
         toupiao.options.add(opt)
     toupiao.save()
-    sessionset.add(subjectid)
+    sessionset.append(subjectid)
     request.session['subjectlist'] = sessionset
     return render_to_response('toupiaosuccess.html', RequestContext(request, {'subject': subject}))
 
@@ -424,7 +425,7 @@ def newslist(request):
     '''
     start = request.REQUEST.get('start', 1)
     start = int(start)
-    list = Subject.objects.filter(endDate__gte=datetime.datetime.now()).filter(isPub=True)
+    list = Subject.objects.filter(endDate__gte=timezone.now()).filter(isPub=True)
     page = Paginator(list, 20)
     currentpage = page.page(start)
     return render_to_response('toupiaolist.html',
@@ -437,7 +438,7 @@ def endnewslist(request):
     '''
     start = request.REQUEST.get('start', 1)
     start = int(start)
-    list = Subject.objects.filter(endDate__lte=datetime.datetime.now()).filter(isPub=True)
+    list = Subject.objects.filter(endDate__lte=timezone.now()).filter(isPub=True)
     page = Paginator(list, 20)
     currentpage = page.page(start)
     return render_to_response('toupiaolistend.html',

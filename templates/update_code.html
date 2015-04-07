@@ -45,11 +45,11 @@
                     <td align="btn"  colspan="3" >
 
                         <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 0 %} checked="checked" {% endifequal %} value="0"><label>无代码</label>
-                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 1 %} checked="checked" {% endifequal %} value="1"><label>1分</label>
-                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 2 %} checked="checked" {% endifequal %} value="2"><label>2分</label>
-                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 3 %} checked="checked" {% endifequal %} value="3"><label>3分</label>
-                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 4 %} checked="checked" {% endifequal %} value="4"><label>4分</label>
-                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 5 %} checked="checked" {% endifequal %} value="5"><label>5分</label>
+                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 1 %} checked="checked" {% endifequal %} value="1"><label>1分(代码注释不到10%)</label>
+                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 2 %} checked="checked" {% endifequal %} value="2"><label>2分(代码注释不到30%)</label>
+                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 3 %} checked="checked" {% endifequal %} value="3"><label>3分(代码注释不到80%)</label>
+                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 4 %} checked="checked" {% endifequal %} value="4"><label>4分(代码注释不到100%)</label>
+                        <input type="radio" style="width: 20px;margin-left: 20px;" name="{{ user.pk }}_num" {% ifequal user.num 5 %} checked="checked" {% endifequal %} value="5"><label>5分(代码注释非常完美)</label>
                     </td>
                 </tr>
                 {% endfor %}

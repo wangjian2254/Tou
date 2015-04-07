@@ -6,9 +6,11 @@
 {#    <a href="/yzxmanage/list_log/"  class="topfont">工作日志列表</a>&nbsp;&nbsp;|&nbsp;#}
     <a href="/newslist"  class="topfont">正在投票列表</a>&nbsp;&nbsp;|&nbsp;
     <a href="/toupiao/endnewslist/"  class="topfont">已结束投票列表</a>&nbsp;&nbsp;|&nbsp;
+
     {% if user.is_staff %}
     <a href="/adminlogin/"  class="topfont">后台管理</a>&nbsp;&nbsp;|&nbsp;
-    <a href="/yzxmanage/list_code_checker/"  class="topfont">代码走查分配</a>
+    <a href="/yzxmanage/list_code_checker/"  class="topfont">代码走查分配</a>&nbsp;&nbsp;|&nbsp;
+    <a href="/yzxmanage/list_movie/"  class="topfont">视频管理</a>&nbsp;&nbsp;|&nbsp;
     {% endif %}
 </div>
 

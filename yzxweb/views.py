@@ -12,6 +12,7 @@ from django.template import RequestContext
 from django.utils import timezone
 from toupiao.models import Depatement
 from toupiao.tools import permission_required
+from yzxweb.forms import MovieForm
 from yzxweb.models import Movie, CodeChecker, CodeCheckRecord
 
 
@@ -22,6 +23,44 @@ def home(request):
     page = Paginator(list, 20)
     currentpage = page.page(start)
     return render_to_response('home.html', RequestContext(request, {'start': start, 'page': page, 'currentpage': currentpage}))
+
+
+@permission_required
+def list_movie(request):
+    start = request.REQUEST.get('start', 1)
+    start = int(start)
+    list = Movie.objects.filter(is_active=True).order_by('-create_time')
+    page = Paginator(list, 20)
+    currentpage = page.page(start)
+    return render_to_response('movie_list.html', RequestContext(request, {'start': start, 'page': page, 'currentpage': currentpage}))
+
+
+@permission_required
+def del_movie(request):
+    m = request.REQUEST.get('m')
+    movie = Movie.objects.get(pk=m)
+    movie.is_active = False
+    movie.delete()
+    return HttpResponseRedirect('/yzxmanage/list_movie/?start=%s' % request.REQUEST.get('start'))
+
+
+@permission_required
+def add_movie(request):
+    if request.method == "POST":
+        movie = Movie()
+        movie.user = request.user
+        movie.desc = request.REQUEST.get("desc", "")
+        movie.name = request.REQUEST.get("name", timezone.now().strftime('%Y-%m-%d'))
+        movie.is_active = True
+        mf = MovieForm(request.POST, request.FILES)
+        if mf.is_valid():
+            movie.movie = mf.cleaned_data['movie']
+        else:
+            return render_to_response('add_movie.html', RequestContext(request, {'movie': movie}))
+        movie.save()
+        return HttpResponseRedirect('/yzxmanage/list_movie/')
+    else:
+        return render_to_response('add_movie.html', RequestContext(request, {'movie': {}}))
 
 
 def show_movie(request):
@@ -102,3 +141,24 @@ def update_code(request):
     elif week == 7:
         day = u'日'
     return render_to_response('update_code.html', RequestContext(request, {'userlist': l, 'today': today.strftime('%Y-%m-%d'), 'day': day}))
+
+
+@login_required
+def update_log(request):
+
+    today = timezone.now()
+    if request.method == "POST":
+        movie = Movie()
+        movie.user = request.user
+        movie.desc = request.REQUEST.get("desc", "")
+        movie.name = request.REQUEST.get("name", timezone.now().strftime('%Y-%m-%d'))
+        movie.is_active = True
+        mf = MovieForm(request.POST, request.FILES)
+        if mf.is_valid():
+            movie.movie = mf.cleaned_data['movie']
+        else:
+            return render_to_response('add_movie.html', RequestContext(request, {'movie': movie}))
+        movie.save()
+        return HttpResponseRedirect('/yzxmanage/list_movie/')
+    else:
+        return render_to_response('add_movie.html', RequestContext(request, {'movie': {}}))

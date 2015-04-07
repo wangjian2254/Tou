@@ -13,7 +13,7 @@ from django.utils import timezone
 from toupiao.models import Depatement
 from toupiao.tools import permission_required
 from yzxweb.forms import MovieForm
-from yzxweb.models import Movie, CodeChecker, CodeCheckRecord
+from yzxweb.models import Movie, CodeChecker, CodeCheckRecord, WorkLog
 
 
 def home(request):
@@ -148,17 +148,25 @@ def update_log(request):
 
     today = timezone.now()
     if request.method == "POST":
-        movie = Movie()
-        movie.user = request.user
-        movie.desc = request.REQUEST.get("desc", "")
-        movie.name = request.REQUEST.get("name", timezone.now().strftime('%Y-%m-%d'))
-        movie.is_active = True
-        mf = MovieForm(request.POST, request.FILES)
-        if mf.is_valid():
-            movie.movie = mf.cleaned_data['movie']
-        else:
-            return render_to_response('add_movie.html', RequestContext(request, {'movie': movie}))
-        movie.save()
+        result = {}
+        worklog, created = WorkLog.objects.get_or_create(user=request.user, date=today)
+        if not created:
+            worklog.major_team.clear()
+            worklog.minor_team.clear()
+        worklog.content = request.REQUEST.get("content", "")
+        worklog.major_team.add(get_user_model().objects.filter(pk__in=request.REQUEST.getlist('major')))
+        worklog.minor_team.add(get_user_model().objects.filter(pk__in=request.REQUEST.getlist('minor')))
+        worklog.save()
+        date = request.REQUEST.get('date', '')
+        result['worklog'] = worklog
+        if date:
+            d = datetime.datetime.strptime(date, '%Y-%m-%d')
+            if today.strftime('%Y-%m-%d') != d.strftime('%Y-%m-%d') and d > today:
+                n_worklog, created = WorkLog.objects.get_or_create(user=request.user, date=d)
+                n_worklog.pre_content = request.REQUEST.get("pre_content", "")
+                n_worklog.save()
+                result['n_worklog'] = n_worklog
+
         return HttpResponseRedirect('/yzxmanage/list_movie/')
     else:
         return render_to_response('add_movie.html', RequestContext(request, {'movie': {}}))

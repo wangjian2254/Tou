@@ -54,10 +54,13 @@ class WorkLog(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'工作者')
     date = models.DateField(default=timezone.now, verbose_name=u'日期')
-    content = models.CharField(max_length=100, verbose_name=u'计划内容')
-    is_weekly = models.BooleanField(default=False, verbose_name=u'是否周工作日志')
+    content = models.TextField(null=True, verbose_name=u'实际内容')
+    pre_content = models.TextField(null=True, verbose_name=u'计划内容')
     major_team = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='major_team', verbose_name=u'今天主要合作者')
     minor_team = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='minor_team', verbose_name=u'今天次要合作者')
+
+    class Meta():
+        unique_together = (('user', 'date'),)
 
 
 class WorkLogReplay(models.Model):

@@ -1,0 +1,119 @@
+{% extends "basepage/basepage.html" %}
+{% block title %}
+        <title>视频列表</title>
+{% endblock  %}
+{% block content %}
+<script type="text/javascript">
+    function submitForm(){
+
+        $j("#form1")[0].submit();
+    }
+
+</script>
+     <div class="con_center" >
+
+            <div style="width: 100%;">
+            <table class="tablemargin" width="100%" height="100%" border="0" cellspacing="0"
+                			cellpadding="0">
+
+
+            <tr>
+                <td valign="top">
+                <form id="form1" action="/yzxmanage/update_log/" method="post">
+            <table id="worklist" class="table0 tdpadding" width="100%" cellpadding="0" cellspacing="0" border="0">
+{#                <tr >#}
+{#                <td width="50px" align="center"  >#}
+{#                        序号#}
+{#                    </td>#}
+{#                    <td align="center" >#}
+{#                        视频#}
+{#                    </td>#}
+{#                    <td width="170px" align="center" >#}
+{#                        时间#}
+{#                    </td>#}
+{##}
+{#                </tr>#}
+                <tr>
+                    <td class="btn" colspan="5"  >{{ worklog.date|date:"Y-m-d"}}工作日志</td>
+                </tr>
+                <tr>
+                    <td align="btn" colspan="2" style="width:50%;" valign="top" >计划工作内容</td>
+                    <td class="btn" colspan="2"  >实际工作内容</td>
+                </tr>
+                <tr>
+                    <td align="btn" colspan="2" style="width:50%;" valign="top" >{{ worklog.pre_content|default_if_none:""|safe}}</td>
+                    <td class="btn" colspan="2"  ><textarea name="content" style="width:100%;" rows="15">{{ worklog.content|default_if_none:""|safe }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="btn" colspan="4"  >今日主要合作同事</td>
+                </tr>
+                <tr>
+                    <td class="center" colspan="4"  >
+                        {% for user in department.person_set.all %}
+                            {% ifequal user.is_active True %}
+                                {% ifnotequal user.pk worklog.user.pk %}
+                                    <input type="checkbox" name="major" value="{{ user.pk }}" style="width:20px;"
+                                        {% for u in worklog.major_team.all %}
+                                            {% ifequal user.pk u.pk %}
+                                                checked="checked"
+                                            {% endifequal %}
+                                        {% endfor %}
+                                    /><label>{{ user.first_name }}</label>
+                                {% endifnotequal %}
+                            {% endifequal %}
+
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="btn" colspan="4"  >今日次要合作同事</td>
+                </tr>
+                <tr>
+                    <td class="center" colspan="4"  >
+                        {% for user in alluser %}
+                            {% ifnotequal user.pk worklog.user.pk %}
+                                <input type="checkbox" name="minor" value="{{ user.pk }}" style="width:20px;"
+                                    {% for u in worklog.minor_team.all %}
+                                        {% ifequal user.pk u.pk %}
+                                            checked="checked"
+                                        {% endifequal %}
+                                    {% endfor %}
+                                /><label>{{ user.first_name }}</label>
+                            {% endifnotequal %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="btn" colspan="4"  >今日直接领导</td>
+                </tr>
+                <tr>
+                    <td class="center" colspan="4"  >
+                        {% for depart in departmentlist %}
+                            {% if depart.leader %}
+                                {% ifnotequal depart.leader.pk worklog.user.pk %}
+                        <input type="radio" name="leader" value="{{ depart.leader.pk }}" style="width:20px;"
+                                {% ifequal department.pk depart.pk %}
+                                    checked="checked"
+                                {% endifequal %}
+                                /><label>{{ depart.leader.first_name }}</label>
+                                {% endifnotequal %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" colspan="3"><a href="#" onclick="submitForm()"  class="commit_btn" >保存</a>{% csrf_token %} </td>
+                </tr>
+            </table>
+                </form>
+            </td>
+            </tr>
+            </table>
+            </div>
+    </div>
+
+<script type="text/javascript">
+    senfe("worklist","#f6f6f6","#fff","#d9ebf5","#aed6fc");
+</script>
+{% endblock  %}

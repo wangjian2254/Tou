@@ -13,7 +13,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from toupiao.models import Subject, Option, Replay, Toupiao, Depatement, Person
+from toupiao.models import Subject, Option, Replay, Toupiao, Department, Person
 
 
 @permission_required
@@ -170,7 +170,7 @@ def uploadsubjectjoins(request):
             p.save()
             subject.joins.add(p)
         for d,ns in depatedict.items():
-            dep,c = Depatement.objects.get_or_create(name=d)
+            dep,c = Department.objects.get_or_create(name=d)
             if c:
                 dep.save()
             for n in ns:
@@ -186,7 +186,7 @@ def uploadsubjectjoins(request):
                     p = Person()
                     p.user = u
                 p.truename = n
-                p.depate = dep
+                p.depart = dep
                 p.save()
                 subject.joins.add(p)
         return HttpResponseRedirect('/toupiao/showsubjectjoins/?subjectid=%s&result=%s&msg=%s'%(sid,"succeed",u"导入成功"))
@@ -323,7 +323,7 @@ def initUser(request):
     bmdict={}
     for u in userlist:
         if not bmdict.has_key(u['bm']):
-            bm=Depatement()
+            bm=Department()
             bm.name=u['bm']
             bm.save()
             bmdict[u['bm']]=bm
@@ -336,7 +336,7 @@ def initUser(request):
         user.is_superuser=False
         user.save()
         person=Person()
-        person.depate=bmdict[u['bm']]
+        person.depart=bmdict[u['bm']]
         person.user=user
         person.truename=u['truename']
         person.save()

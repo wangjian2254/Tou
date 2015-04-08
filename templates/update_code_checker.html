@@ -1,3 +1,4 @@
+
 {% extends "basepage/basepage.html" %}
 {% block title %}
         <title>视频列表</title>
@@ -43,13 +44,17 @@
 
                         {% for au in userlist %}
                             <input type="checkbox" name="{{ user.pk }}" value="{{ au.pk }}" style="width:20px;"
-                            {% for u in user.dafen_user_checker.all %}
+                            {% ifequal user.pk au.pk %}
+                                disabled="disabled"
+                            {% else %}
+                                {% for u in user.dafen_user_checker.all %}
                                  {% ifequal u.to_user_id au.pk %}
                                    {% ifequal u.is_active True %}
                                    checked="checked"
                                    {% endifequal %}
                                  {% endifequal %}
                             {% endfor %}
+                            {% endifequal %}
                             > <label>{{ au.first_name }}</label>
                         {% endfor %}
                     </td>

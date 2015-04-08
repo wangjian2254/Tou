@@ -10,13 +10,19 @@ from django.shortcuts import render, render_to_response
 # Create your views here.
 from django.template import RequestContext
 from django.utils import timezone
-from toupiao.models import Depatement
+from toupiao.models import Department
 from toupiao.tools import permission_required
 from yzxweb.forms import MovieForm
 from yzxweb.models import Movie, CodeChecker, CodeCheckRecord, WorkLog
 
 
 def home(request):
+    """
+    默认界面，显示视频列表
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     start = request.REQUEST.get('start', 1)
     start = int(start)
     list = Movie.objects.filter(is_active=True).order_by('-create_time')
@@ -27,6 +33,12 @@ def home(request):
 
 @permission_required
 def list_movie(request):
+    """
+    视频管理 列表
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     start = request.REQUEST.get('start', 1)
     start = int(start)
     list = Movie.objects.filter(is_active=True).order_by('-create_time')
@@ -37,6 +49,12 @@ def list_movie(request):
 
 @permission_required
 def del_movie(request):
+    """
+    视频删除
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     m = request.REQUEST.get('m')
     movie = Movie.objects.get(pk=m)
     movie.is_active = False
@@ -46,6 +64,12 @@ def del_movie(request):
 
 @permission_required
 def add_movie(request):
+    """
+    添加视频
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     if request.method == "POST":
         movie = Movie()
         movie.user = request.user
@@ -64,6 +88,12 @@ def add_movie(request):
 
 
 def show_movie(request):
+    """
+    显示视频
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     m = request.REQUEST.get('m')
     movie = Movie.objects.get(pk=m)
     html = 'movie.html'
@@ -77,15 +107,27 @@ def show_movie(request):
 
 @permission_required
 def list_code_checker(request):
-    dev_department = Depatement.objects.get(flag='dev')
-    userlist = get_user_model().objects.filter(depate=dev_department, is_active=True)
+    """
+    代码走查列表
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
+    dev_department = Department.objects.get(flag='dev')
+    userlist = get_user_model().objects.filter(depart=dev_department, is_active=True)
     return render_to_response('update_code_checker.html', RequestContext(request, {'userlist': userlist}))
 
 
 @permission_required
 def update_code_checker(request):
-    dev_department = Depatement.objects.get(flag='dev')
-    userlist = get_user_model().objects.filter(depate=dev_department, is_active=True)
+    """
+    代码走查 设置走查对象
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
+    dev_department = Department.objects.get(flag='dev')
+    userlist = get_user_model().objects.filter(depart=dev_department, is_active=True)
     for user in userlist:
         userpk = request.REQUEST.getlist('%s' % user.pk)
         if userpk:
@@ -102,13 +144,18 @@ def update_code_checker(request):
         else:
             user.dafen_user_checker.all().update(is_active=False)
             # CodeChecker.objects.filter(user=user).
-    userlist = get_user_model().objects.filter(depate=dev_department, is_active=True)
+    userlist = get_user_model().objects.filter(depart=dev_department, is_active=True)
     return render_to_response('update_code_checker.html', RequestContext(request, {'userlist': userlist}))
 
 
 @login_required
 def update_code(request):
-
+    """
+    代码走查打分
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     today = timezone.now()
     for u in request.user.dafen_user_checker.filter(is_active=True):
         dafen = request.REQUEST.get('%s_num' % u.to_user_id)
@@ -145,28 +192,64 @@ def update_code(request):
 
 @login_required
 def update_log(request):
-
+    """
+    填写日志
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
     today = timezone.now()
     if request.method == "POST":
-        result = {}
         worklog, created = WorkLog.objects.get_or_create(user=request.user, date=today)
         if not created:
             worklog.major_team.clear()
             worklog.minor_team.clear()
         worklog.content = request.REQUEST.get("content", "")
-        worklog.major_team.add(get_user_model().objects.filter(pk__in=request.REQUEST.getlist('major')))
-        worklog.minor_team.add(get_user_model().objects.filter(pk__in=request.REQUEST.getlist('minor')))
+        worklog.major_team.clear()
+        for u in get_user_model().objects.filter(pk__in=request.REQUEST.getlist('major')):
+            worklog.major_team.add(u)
+        worklog.minor_team.clear()
+        for u in get_user_model().objects.filter(pk__in=request.REQUEST.getlist('minor')):
+            worklog.minor_team.add(u)
+        if request.REQUEST.get('leader'):
+            worklog.leader = get_user_model().objects.get(pk=request.REQUEST.get('leader'))
+        else:
+            worklog.leader = None
         worklog.save()
-        date = request.REQUEST.get('date', '')
-        result['worklog'] = worklog
-        if date:
-            d = datetime.datetime.strptime(date, '%Y-%m-%d')
-            if today.strftime('%Y-%m-%d') != d.strftime('%Y-%m-%d') and d > today:
-                n_worklog, created = WorkLog.objects.get_or_create(user=request.user, date=d)
-                n_worklog.pre_content = request.REQUEST.get("pre_content", "")
-                n_worklog.save()
-                result['n_worklog'] = n_worklog
-
-        return HttpResponseRedirect('/yzxmanage/list_movie/')
     else:
-        return render_to_response('add_movie.html', RequestContext(request, {'movie': {}}))
+        worklog, created = WorkLog.objects.get_or_create(user=request.user, date=today)
+    return render_to_response('update_log.html', RequestContext(request, {'worklog': worklog, 'departmentlist': Department.objects.all(), 'department': request.user.depart, 'alluser': get_user_model().objects.filter(is_active=True).exclude(depart=request.user.depart)}))
+
+
+@login_required
+def update_pre_log(request):
+    """
+    填写 计划日志
+    by:王健 at:2015-4-8
+    :param request:
+    :return:
+    """
+    today = timezone.now()
+    date = request.REQUEST.get('date', '')
+    if date:
+        d = datetime.datetime.strptime(date, '%Y-%m-%d')
+        if today.strftime('%Y-%m-%d') != d.strftime('%Y-%m-%d') and d > today:
+            n_worklog, created = WorkLog.objects.get_or_create(user=request.user, date=d)
+            n_worklog.pre_content = request.REQUEST.get("pre_content", "")
+            n_worklog.save()
+            return render_to_response('update_pro_log.html', RequestContext(request, {'worklog': n_worklog}))
+    return render_to_response('update_pro_log.html', RequestContext(request, {'error': [u'日期选择不正确']}))
+
+
+@login_required
+def show_pre_log_list(request):
+    """
+    显示 计划日志列表
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
+    today = timezone.now()
+    loglist = WorkLog.objects.filter(user=request.user, date__gt=today).order_by('id')
+    return render_to_response('pro_log_list.html', RequestContext(request, {'loglist': loglist}))
+

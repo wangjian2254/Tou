@@ -7,7 +7,7 @@ from django.core import serializers
 from django.forms import CheckboxSelectMultiple, Select
 from django.forms.util import ErrorList
 from django.http import HttpResponse
-from toupiao.models import Subject, Option, Depatement
+from toupiao.models import Subject, Option, Department
 
 __author__ = u'王健'
 
@@ -68,14 +68,14 @@ class OptionAdmin(admin.ModelAdmin):
 
 
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'depate')
-    list_filter = ('depate',)
+    list_display = ('username', 'first_name', 'depart')
+    list_filter = ('depart',)
     search_fields = ('first_name', 'username')
     ordering = ( 'id',)
 
 
 admin.site.register(Subject, SubjectAdmin)
-admin.site.register(Depatement)
+admin.site.register(Department)
 admin.site.register(get_user_model(), PersonAdmin)
 # admin.site.register(Option,OptionAdmin)
 

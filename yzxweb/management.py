@@ -4,7 +4,7 @@
 import sys
 from django.db.models import signals
 from django.contrib.auth import models as django_user, get_user_model
-from toupiao.models import Depatement
+from toupiao.models import Department
 
 __author__ = u'王健'
 reload(sys)
@@ -24,7 +24,7 @@ def add_default_app(**kwargs):
     lst_node = userxml.getiterator("RTX_Dept")[0]
     depdict = {}
     for node in lst_node:
-        dep, created = Depatement.objects.get_or_create(name=node.attrib['DeptName'])
+        dep, created = Department.objects.get_or_create(name=node.attrib['DeptName'])
         depdict[node.attrib['DeptID']] = dep
         if depdict.has_key(node.attrib['PDeptID']):
             dep.father = depdict[node.attrib['PDeptID']]
@@ -48,7 +48,7 @@ def add_default_app(**kwargs):
         print node
     lst_node = userxml.getiterator("RTX_DeptUser")[0]
     for node in lst_node:
-        userdict[node.attrib['UserID']].depate = depdict[node.attrib['DeptID']]
+        userdict[node.attrib['UserID']].depart = depdict[node.attrib['DeptID']]
         userdict[node.attrib['UserID']].save()
 
         print node

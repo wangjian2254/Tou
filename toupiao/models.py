@@ -7,9 +7,10 @@ from django.db import models
 from django.utils import timezone
 
 
-class Depatement(models.Model):
+class Department(models.Model):
     name = models.CharField(max_length=10, unique=True, verbose_name=u'部门名称', help_text=u'部门名称')
-    father = models.ForeignKey('Depatement', null=True, verbose_name=u'父级部门')
+    father = models.ForeignKey('Department', null=True, verbose_name=u'父级部门')
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=u'领导')
     flag = models.CharField(max_length=20, unique=True, null=True, verbose_name=u'唯一标示', help_text=u'特殊模块使，例如研发部的代码走查')
 
     def __unicode__(self):
@@ -23,7 +24,7 @@ class Depatement(models.Model):
 class Person(AbstractUser):
     choices = ((True, u'女'), (False, u'男'))
     # rtx_username = models.CharField(max_length=20, unique=True, null=True, verbose_name=u'腾讯通账号', help_text=u'腾讯通账号，方便推送')
-    depate = models.ForeignKey(Depatement, blank=True, null=True, verbose_name=u'部门', help_text=u'隶属部门')
+    depart = models.ForeignKey(Department, blank=True, null=True, verbose_name=u'部门', help_text=u'隶属部门')
     male = models.BooleanField(choices=choices, default=True, verbose_name=u'性别', help_text=u'性别')
 
 
@@ -34,7 +35,7 @@ class Person(AbstractUser):
 
 
     def __unicode__(self):
-        return u'%s_%s' % (self.get_full_name(), (self.depate and [self.depate.name] or [u'空'])[0])
+        return u'%s_%s' % (self.get_full_name(), (self.depart and [self.depart.name] or [u'空'])[0])
 
 
 

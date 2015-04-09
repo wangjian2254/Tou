@@ -110,6 +110,7 @@ STATICFILES_DIRS = (
     ("ueditor", os.path.join(STATIC_ROOT, 'ueditor')),
     ("upload", os.path.join(STATIC_ROOT, 'upload')),
     ("js", os.path.join(STATIC_ROOT, 'js')),
+    ("jquery-ui", os.path.join(STATIC_ROOT, 'jquery-ui')),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

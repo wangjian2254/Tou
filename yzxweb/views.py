@@ -13,7 +13,7 @@ from django.utils import timezone
 from toupiao.models import Department
 from toupiao.tools import permission_required
 from yzxweb.forms import MovieForm
-from yzxweb.models import Movie, CodeChecker, CodeCheckRecord, WorkLog
+from yzxweb.models import Movie, CodeChecker, CodeCheckRecord, WorkLogDate, WorkLogWeek
 
 
 def home(request):
@@ -191,7 +191,7 @@ def update_code(request):
 
 
 @login_required
-def update_log(request):
+def update_date_log(request):
     """
     填写日志
     by:王健 at:2015-4-7
@@ -200,7 +200,25 @@ def update_log(request):
     """
     today = timezone.now()
     if request.method == "POST":
-        worklog, created = WorkLog.objects.get_or_create(user=request.user, date=today)
+        worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=today)
+        worklog.content = request.REQUEST.get("content", "")
+        worklog.save()
+    else:
+        worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=today)
+    return render_to_response('update_log.html', RequestContext(request, {'worklog': worklog, 'pre_worklog': WorkLogDate.objects.filter(date__gt=today)}))
+
+
+@login_required
+def update_week_log(request):
+    """
+    填写日志
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
+    today = timezone.now()
+    if request.method == "POST":
+        worklog, created = WorkLogWeek.objects.get_or_create(user=request.user, date=today)
         if not created:
             worklog.major_team.clear()
             worklog.minor_team.clear()
@@ -217,9 +235,8 @@ def update_log(request):
             worklog.leader = None
         worklog.save()
     else:
-        worklog, created = WorkLog.objects.get_or_create(user=request.user, date=today)
-    return render_to_response('update_log.html', RequestContext(request, {'worklog': worklog, 'departmentlist': Department.objects.all(), 'department': request.user.depart, 'alluser': get_user_model().objects.filter(is_active=True).exclude(depart=request.user.depart)}))
-
+        worklog, created = WorkLogWeek.objects.get_or_create(user=request.user, date=today)
+    return render_to_response('update_week_log.html', RequestContext(request, {'worklog': worklog, 'departmentlist': Department.objects.all(), 'department': request.user.depart, 'alluser': get_user_model().objects.filter(is_active=True)}))
 
 @login_required
 def update_pre_log(request):
@@ -230,15 +247,21 @@ def update_pre_log(request):
     :return:
     """
     today = timezone.now()
+    wid = request.GET.get('w')
+    if wid:
+        n_worklog = WorkLogDate.objects.get(pk=wid)
+        return render_to_response('update_pro_log.html', RequestContext(request, {'worklog': n_worklog}))
     date = request.REQUEST.get('date', '')
     if date:
         d = datetime.datetime.strptime(date, '%Y-%m-%d')
-        if today.strftime('%Y-%m-%d') != d.strftime('%Y-%m-%d') and d > today:
-            n_worklog, created = WorkLog.objects.get_or_create(user=request.user, date=d)
+        if today.strftime('%Y-%m-%d') != d.strftime('%Y-%m-%d') and d > today and (d-today).day < 11:
+            n_worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=d)
             n_worklog.pre_content = request.REQUEST.get("pre_content", "")
             n_worklog.save()
-            return render_to_response('update_pro_log.html', RequestContext(request, {'worklog': n_worklog}))
-    return render_to_response('update_pro_log.html', RequestContext(request, {'error': [u'日期选择不正确']}))
+            return render_to_response('update_pre_log.html', RequestContext(request, {'worklog': n_worklog}))
+        else:
+            return render_to_response('update_pre_log.html', RequestContext(request, {'error': [u'只能制定未来10天内的工作计划']}))
+    return render_to_response('update_pre_log.html', RequestContext(request, {'error': [u'日期选择不正确']}))
 
 
 @login_required

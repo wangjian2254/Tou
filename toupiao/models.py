@@ -33,13 +33,11 @@ class Person(AbstractUser):
             self.set_password(self.password)
         super(Person, self).save(**kwargs)
 
-
     def __unicode__(self):
         return u'%s_%s' % (self.get_full_name(), (self.depart and [self.depart.name] or [u'空'])[0])
 
-
-
     class Meta():
+        ordering = ['username']
         verbose_name = u'员工'
         verbose_name_plural = u'员工列表'
 

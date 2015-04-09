@@ -3,11 +3,18 @@
         <title>视频列表</title>
 {% endblock  %}
 {% block content %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}jquery-ui/jquery-ui.min.css">
+  <script src="{{ STATIC_URL }}jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
     function submitForm(){
 
         $j("#form1")[0].submit();
     }
+    $j(function(){
+        $j( "#datepicker" ).datepicker();
+        $j( "#datepicker" ).datepicker( "setDate", "{{ worklog.date|date:"d/m/Y"}}" );
+    });
+
 
 </script>
      <div class="con_center" >
@@ -19,7 +26,7 @@
 
             <tr>
                 <td valign="top">
-                <form id="form1" action="/yzxmanage/update_date_log/" method="post">
+                <form id="form1" action="/yzxmanage/update_pre_log/" method="post">
             <table id="worklist" class="table0 tdpadding" width="100%" cellpadding="0" cellspacing="0" border="0">
 {#                <tr >#}
 {#                <td width="50px" align="center"  >#}
@@ -34,30 +41,16 @@
 {##}
 {#                </tr>#}
                 <tr>
-                    <td class="btn" colspan="4"  >{{ worklog.date|date:"D Y-m-d"}}工作日志</td>
+                    <td class="btn" colspan="4"  ><input type="text" id="datepicker">{{ worklog.date|date:"D Y-m-d"}}计划工作内容</td>
                 </tr>
+
                 <tr>
-                    <td align="btn" colspan="2" style="width:50%;" valign="top" >计划工作内容</td>
-                    <td class="btn" colspan="2"  >实际工作内容</td>
-                </tr>
-                <tr>
-                    <td align="btn" colspan="2" style="width:50%;" valign="top" >{{ worklog.pre_content|default_if_none:""|safe}}</td>
-                    <td class="btn" colspan="2"  ><textarea name="content" style="width:95%;padding: 5px;" rows="15">{{ worklog.content|default_if_none:""|safe }}</textarea></td>
+                    <td class="btn" colspan="4"  ><textarea name="content" style="width:95%;padding: 5px;" rows="15">{{ worklog.pre_content|default_if_none:""|safe }}</textarea></td>
                 </tr>
                 <tr>
                     <td align="center" colspan="3"><a href="#" onclick="submitForm()"  class="commit_btn" >保存</a>{% csrf_token %} </td>
                 </tr>
-                <tr>
-                    <td align="center" colspan="3"><a href="/yzxmanage/update_pre_log/" style="float: right;margin-right: 10px;" class="commit_btn" >制定工作计划</a> </td>
-                </tr>
-                {% for prelog in pre_worklog %}
-                <tr>
-                    <td align="btn" colspan="4"  >{{ prelog.date|date:"D Y-m-d"}}工作计划 <a href="/yzxmanage/update_pre_log/?w={{ prelog.pk }}"  style="float: right;margin-right: 10px;" class="commit_btn">修改工作计划</a></td>
-                </tr>
-                <tr>
-                    <td align="btn" colspan="4" style="padding: 10px;" valign="top" >{{ prelog.pre_content|default_if_none:""|safe}}</td>
-                </tr>
-                {% endfor %}
+
             </table>
                 </form>
             </td>

@@ -203,9 +203,36 @@ def update_date_log(request):
         worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=today)
         worklog.content = request.REQUEST.get("content", "")
         worklog.save()
+        result = {'msg': u'保存今日工作日志成功。', 'result': 'succeed'}
     else:
         worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=today)
-    return render_to_response('update_log.html', RequestContext(request, {'worklog': worklog, 'pre_worklog': WorkLogDate.objects.filter(date__gt=today)}))
+        result = {}
+    r = {'worklog': worklog, 'pre_worklog': WorkLogDate.objects.filter(date__gt=today)}
+    r.update(result)
+    return render_to_response('update_log.html', RequestContext(request, r))
+
+
+@login_required
+def list_log(request):
+    """
+    填写日志
+    by:王健 at:2015-4-7
+    :param request:
+    :return:
+    """
+    date = request.REQUEST.get('date', '')
+    if date:
+        d = datetime.datetime.strptime(date, '%m/%d/%Y')
+    else:
+        d = timezone.now() + datetime.timedelta(days=-7)
+    user_id = request.REQUEST.get('user_id', '')
+    if not user_id:
+        user_id = request.user.pk
+    userlist = []
+    if request.user.pk == request.user.depart.leader_id:
+        userlist = get_user_model().objects.filter(depart=request.user.depart)
+    r = {'date': d, 'user_id': int(user_id), 'pre_worklog': WorkLogDate.objects.filter(date__gt=d, user_id=user_id)[:10], 'userlist': userlist}
+    return render_to_response('list_log.html', RequestContext(request, r))
 
 
 @login_required
@@ -234,9 +261,13 @@ def update_week_log(request):
         else:
             worklog.leader = None
         worklog.save()
+        result = {'msg': u'保存今日工作日志成功。', 'result': 'succeed'}
     else:
         worklog, created = WorkLogWeek.objects.get_or_create(user=request.user, date=today)
-    return render_to_response('update_week_log.html', RequestContext(request, {'worklog': worklog, 'departmentlist': Department.objects.all(), 'department': request.user.depart, 'alluser': get_user_model().objects.filter(is_active=True)}))
+        result = {}
+    r ={'worklog': worklog, 'departmentlist': Department.objects.all(), 'department': request.user.depart, 'alluser': get_user_model().objects.filter(is_active=True)}
+    r.update(result)
+    return render_to_response('update_week_log.html', RequestContext(request, r))
 
 @login_required
 def update_pre_log(request):
@@ -248,20 +279,28 @@ def update_pre_log(request):
     """
     today = timezone.now()
     wid = request.GET.get('w')
-    if wid:
-        n_worklog = WorkLogDate.objects.get(pk=wid)
-        return render_to_response('update_pro_log.html', RequestContext(request, {'worklog': n_worklog}))
     date = request.REQUEST.get('date', '')
     if date:
-        d = datetime.datetime.strptime(date, '%Y-%m-%d')
-        if today.strftime('%Y-%m-%d') != d.strftime('%Y-%m-%d') and d > today and (d-today).day < 11:
-            n_worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=d)
-            n_worklog.pre_content = request.REQUEST.get("pre_content", "")
-            n_worklog.save()
-            return render_to_response('update_pre_log.html', RequestContext(request, {'worklog': n_worklog}))
-        else:
-            return render_to_response('update_pre_log.html', RequestContext(request, {'error': [u'只能制定未来10天内的工作计划']}))
-    return render_to_response('update_pre_log.html', RequestContext(request, {'error': [u'日期选择不正确']}))
+        d = datetime.datetime.strptime(date, '%m/%d/%Y')
+    if request.method == "GET":
+        if wid:
+            n_worklog = WorkLogDate.objects.get(pk=wid)
+        if date:
+            if today.strftime('%Y-%m-%d') < d.strftime('%Y-%m-%d') and (today + datetime.timedelta(days=11)).strftime('%Y-%m-%d') > d.strftime('%Y-%m-%d'):
+                n_worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=d)
+            else:
+                return render_to_response('update_pre_log.html', RequestContext(request, {'msg': u'只能制定未来10天内的工作计划', 'result': 'warning'}))
+        return render_to_response('update_pre_log.html', RequestContext(request, {'worklog': n_worklog}))
+    else:
+
+            if today.strftime('%Y-%m-%d') < d.strftime('%Y-%m-%d') and (today + datetime.timedelta(days=11)).strftime('%Y-%m-%d') > d.strftime('%Y-%m-%d'):
+                n_worklog, created = WorkLogDate.objects.get_or_create(user=request.user, date=d)
+                n_worklog.pre_content = request.REQUEST.get("pre_content", "")
+                n_worklog.save()
+                return render_to_response('update_pre_log.html', RequestContext(request, {'worklog': n_worklog, 'msg': u'指定工作计划成功。', 'result': 'succeed'}))
+            else:
+                return render_to_response('update_pre_log.html', RequestContext(request, {'msg': u'只能制定未来10天内的工作计划', 'result': 'warning'}))
+    return render_to_response('update_pre_log.html', RequestContext(request, {'worklog': worklog}))
 
 
 @login_required

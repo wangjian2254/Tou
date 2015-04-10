@@ -8,6 +8,16 @@
 
         $j("#form1")[0].submit();
     }
+    $j(function(){
+        $j("#datepicker").datepicker({ onSelect: function(dateText, inst) {
+            window.location.href='/yzxmanage/list_log/?date='+dateText+'&user_id='+$j('input[name="user_id"]').val();
+        }});
+    });
+
+    function look_user_log(user_id){
+        var dateText = $j('#datepicker').val();
+        window.location.href='/yzxmanage/list_log/?date='+dateText+'&user_id='+user_id;
+    }
 
 </script>
      <div class="con_center" >
@@ -34,28 +44,24 @@
 {##}
 {#                </tr>#}
                 <tr>
-                    <td class="btn" colspan="4"  >{{ worklog.date|date:"D Y-m-d"}}工作日志</td>
+                    <td class="btn" colspan="4"  ><input type="text" name="date" id="datepicker" style="width:120px;padding-left: 10px;" value="{{ date| date:"m/d/Y" }}">&nbsp;后的10个工作日志</td>
                 </tr>
                 <tr>
-                    <td align="btn" colspan="2" style="width:50%;" valign="top" >计划工作内容</td>
-                    <td class="btn" colspan="2"  >实际工作内容</td>
-                </tr>
-                <tr>
-                    <td align="btn" colspan="2" style="width:50%;" valign="top" >{{ worklog.pre_content|default_if_none:""|safe}}</td>
-                    <td class="btn" colspan="2"  ><textarea name="content" style="width:95%;padding: 5px;" rows="15">{{ worklog.content|default_if_none:""|safe }}</textarea></td>
-                </tr>
-                <tr>
-                    <td align="center" colspan="3"><a href="#" onclick="submitForm()"  class="commit_btn" >保存</a>{% csrf_token %} </td>
-                </tr>
-                <tr>
-                    <td align="center" colspan="3"><a href="/yzxmanage/update_pre_log/" style="float: right;margin-right: 10px;" class="commit_btn" >制定工作计划</a> </td>
+                    <td class="btn" colspan="4"  >{% for user in userlist %}
+                        <input type="radio" name="user_id" value="{{ au.pk }}" style="width:20px;" onclick="look_user_log({{ user.pk }})"
+                            {% ifequal user.pk user_id %}
+                                checked="checked"
+                            {% endifequal %}
+                            > <label>{{ user.first_name }}</label>
+                    {% endfor %}</td>
                 </tr>
                 {% for prelog in pre_worklog %}
                 <tr>
-                    <td align="btn" colspan="4"  ><a href="/yzxmanage/update_pre_log/?w={{ prelog.pk }}" style="color:#0072AC;" >{{ prelog.date|date:"D Y-m-d"}}工作计划</a></td>
+                    <td align="btn" colspan="4"  >{{ prelog.date|date:"D Y-m-d"}}工作日志</td>
                 </tr>
                 <tr>
-                    <td align="btn" colspan="4" style="padding: 10px;" valign="top" >{{ prelog.pre_content|default_if_none:""|safe}}</td>
+                    <td align="btn" colspan="2" style="padding: 10px;width: 50%;" valign="top" >{{ prelog.pre_content|default_if_none:""|safe}}</td>
+                    <td align="btn" colspan="2" style="padding: 10px;" valign="top" >{{ prelog.content|default_if_none:""|safe}}</td>
                 </tr>
                 {% endfor %}
             </table>

@@ -6,7 +6,7 @@ Created on 2011-3-19
 '''
 from django.conf.urls import patterns
 from yzxweb.views import update_code_checker, list_code_checker, update_code, list_movie, add_movie, del_movie, \
-    update_date_log, update_week_log, update_pre_log, show_pre_log_list
+    update_date_log, update_week_log, update_pre_log, show_pre_log_list, list_log
 
 urlpatterns = patterns('^yzxweb/$',
 
@@ -22,6 +22,7 @@ urlpatterns = patterns('^yzxweb/$',
 
                        (r'^update_date_log/$', update_date_log),
                        (r'^update_week_log/$', update_week_log),
+                       (r'^list_log/$', list_log),
                        (r'^update_pre_log/$', update_pre_log),
                        (r'^show_pre_log_list/$', show_pre_log_list),
 

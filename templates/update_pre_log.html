@@ -3,16 +3,24 @@
         <title>视频列表</title>
 {% endblock  %}
 {% block content %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}jquery-ui/jquery-ui.min.css">
-  <script src="{{ STATIC_URL }}jquery-ui/jquery-ui.min.js"></script>
+
 <script type="text/javascript">
     function submitForm(){
 
         $j("#form1")[0].submit();
     }
     $j(function(){
-        $j( "#datepicker" ).datepicker();
-        $j( "#datepicker" ).datepicker( "setDate", "{{ worklog.date|date:"d/m/Y"}}" );
+{#        $j("#datepicker").datepicker();#}
+        $j("#datepicker").datepicker({ onSelect: function(dateText, inst) {
+            window.location.href='/yzxmanage/update_pre_log/?date='+dateText;
+        }});
+{#        var datestr = "{{ worklog.date|date:"m/d/Y"}}";#}
+{#        if(datestr){#}
+{#            $j( "#datepicker" ).datepicker( "setDate", datestr);#}
+{#        }else{#}
+{#            $j("#datepicker").datepicker("setDate", {{ today| date:"m/d/Y" }});#}
+{#        }#}
+
     });
 
 
@@ -40,12 +48,17 @@
 {#                    </td>#}
 {##}
 {#                </tr>#}
+                {% if error %}
+                    <tr>
+                    <td class="btn" colspan="4" style="color:#ff0000;" >{% for err in error %} <p style="color:#ff0000;">{{ err }}</p>{% endfor %}</td>
+                </tr>
+                {% endif %}
                 <tr>
-                    <td class="btn" colspan="4"  ><input type="text" id="datepicker">{{ worklog.date|date:"D Y-m-d"}}计划工作内容</td>
+                    <td class="btn" colspan="4"  ><input type="text" name="date" id="datepicker" style="width:120px;padding-left: 10px;" value="{{ worklog.date| date:"m/d/Y" }}">&nbsp;计划工作内容</td>
                 </tr>
 
                 <tr>
-                    <td class="btn" colspan="4"  ><textarea name="content" style="width:95%;padding: 5px;" rows="15">{{ worklog.pre_content|default_if_none:""|safe }}</textarea></td>
+                    <td class="btn" colspan="4"  ><textarea name="pre_content" style="width:95%;padding: 5px;" rows="15">{{ worklog.pre_content|default_if_none:""|safe }}</textarea></td>
                 </tr>
                 <tr>
                     <td align="center" colspan="3"><a href="#" onclick="submitForm()"  class="commit_btn" >保存</a>{% csrf_token %} </td>

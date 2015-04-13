@@ -1,6 +1,6 @@
 {% extends "basepage/basepage.html" %}
 {% block title %}
-        <title>视频列表</title>
+        <title>{{ userobj.first_name }}的工作日志——{{ date| date:"Y-m-d" }}</title>
 {% endblock  %}
 {% block content %}
 <script type="text/javascript">
@@ -44,10 +44,19 @@
 {##}
 {#                </tr>#}
                 <tr>
-                    <td class="btn" colspan="4"  ><input type="text" name="date" id="datepicker" style="width:120px;padding-left: 10px;" value="{{ date| date:"m/d/Y" }}">&nbsp;后的10个工作日志</td>
+                    <td class="btn" colspan="4"  ><input type="text" name="date" id="datepicker" style="width:120px;padding-left: 10px;" value="{{ date| date:"m/d/Y" }}">&nbsp;后的10个工作日志——{{ userobj.first_name }}</td>
                 </tr>
                 <tr>
                     <td class="btn" colspan="4"  >{% for user in userlist %}
+                        <input type="radio" name="user_id" value="{{ au.pk }}" style="width:20px;" onclick="look_user_log({{ user.pk }})"
+                            {% ifequal user.pk user_id %}
+                                checked="checked"
+                            {% endifequal %}
+                            > <label>{{ user.first_name }}</label>
+                    {% endfor %}</td>
+                </tr>
+                <tr>
+                    <td class="btn" colspan="4"  >{% for user in userlist2 %}
                         <input type="radio" name="user_id" value="{{ au.pk }}" style="width:20px;" onclick="look_user_log({{ user.pk }})"
                             {% ifequal user.pk user_id %}
                                 checked="checked"
@@ -75,4 +84,10 @@
 <script type="text/javascript">
     senfe("worklist","#f6f6f6","#fff","#d9ebf5","#aed6fc");
 </script>
+    <div class="con_center" >
+            {% include 'comment/comment.html' %}
+        </div>
+    <div class="con_center" >
+            {% include 'comment/commentlist.html' %}
+        </div>
 {% endblock  %}

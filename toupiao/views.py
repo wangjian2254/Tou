@@ -482,7 +482,7 @@ def commentList(request):
     type = request.POST.get('type', '')
     objid = request.POST.get('pk', '')
     replaylist = []
-    for replay in Replay.objects.filter(type=type).filter(objid=objid).order_by('-updatetime'):
+    for replay in Replay.objects.filter(type=type).filter(objid=objid).order_by('-updatetime')[:40]:
         rmap = {}
         rmap['id'] = replay.pk
         rmap['face'] = replay.face
@@ -492,9 +492,11 @@ def commentList(request):
         if replay.user:
             rmap['userid'] = replay.user.pk
             rmap['username'] = replay.user.username
+            rmap['first_name'] = replay.user.first_name
         else:
             rmap['userid'] = 0
             rmap['username'] = u'匿名用户'
+            rmap['first_name'] = replay.user.first_name
 
         replaylist.append(rmap)
     html = json.dumps(replaylist)

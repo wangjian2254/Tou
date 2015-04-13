@@ -67,12 +67,12 @@ var replaybutton=document.getElementById("replaybutton");
                var replayhtml2='</td><td class="commentrr"></td></tr><tr class="bottom"><td class="commentrbl"></td><td class="commentrb"></td><td class="commentrbr"></td></tr></table></div>';
                 for(var j=0;j<dataarr.length;j++){
                    dataobj=dataarr[j];
-                    var replayhtml=commenthtml0+dataobj['face']+commenthtml1+'<span id="'+dataobj['id']+'txt">'+dataobj['username']+':<br/>'+dataobj['createDate']+'<br/>'+dataobj['content']+'</span>'+'<div class="reply">'+commenthtml2;
+                    var replayhtml=commenthtml0+dataobj['face']+commenthtml1+'<span id="'+dataobj['id']+'txt">'+dataobj['first_name']+':<br/>'+dataobj['createDate']+'<br/>'+dataobj['content']+'</span>'+'<div class="reply">'+commenthtml2;
                     if(dataobj['children']){
                         for(var k=0;k<dataobj['children'].length;k++){
                             dataobj2=dataobj['children'][k];
                             replayhtml+=replayhtml0+dataobj2['face'];
-                            replayhtml+=replayhtml1+'<span id="'+dataobj2['id']+'txt">'+dataobj2['username']+':<br/>'+dataobj2['createDate']+'<br/>'+dataobj2['content']+'</span>';
+                            replayhtml+=replayhtml1+'<span id="'+dataobj2['id']+'txt">'+dataobj2['first_name']+':<br/>'+dataobj2['createDate']+'<br/>'+dataobj2['content']+'</span>';
                             replayhtml+=replayhtml2;
                         }
                     }

@@ -102,7 +102,7 @@ def show_movie(request):
         html = 'movie_flv.html'
 
 
-    return render_to_response(html, RequestContext(request, {'movie': movie}))
+    return render_to_response(html, RequestContext(request, {'movie': movie, 'obj': movie, 'objtype': 'movie'}))
 
 
 @permission_required
@@ -228,10 +228,15 @@ def list_log(request):
     user_id = request.REQUEST.get('user_id', '')
     if not user_id:
         user_id = request.user.pk
+    userobj = get_user_model().objects.get(pk=user_id)
     userlist = []
-    if request.user.pk == request.user.depart.leader_id:
-        userlist = get_user_model().objects.filter(depart=request.user.depart)
-    r = {'date': d, 'user_id': int(user_id), 'pre_worklog': WorkLogDate.objects.filter(date__gt=d, user_id=user_id)[:10], 'userlist': userlist}
+    # if request.user.pk == request.user.depart.leader_id:
+    userlist = get_user_model().objects.filter(depart=request.user.depart).filter(is_active=True)
+    userlist2 = get_user_model().objects.exclude(depart=request.user.depart).filter(is_active=True)
+
+    r = {'date': d, 'user_id': int(user_id),
+         'pre_worklog': WorkLogDate.objects.filter(date__gt=d, user_id=user_id)[:10], 'userlist': userlist,
+         'userlist2': userlist2, 'userobj': userobj, 'obj': userobj, 'objtype': 'list_log'}
     return render_to_response('list_log.html', RequestContext(request, r))
 
 

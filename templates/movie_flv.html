@@ -3,7 +3,7 @@
         <title>投票列表——依子轩管理</title>
 {% endblock  %}
 {% block content %}
-<div id="player5" style="width:800px;height: 600px; margin:0px; border:solid 5px #50031a;color:#ffffff;" >极酷Flvplayer播放器,更多例子请访问:<br />
+<div id="player5" style="width:800px;height: 600px; margin:0px; border:solid 5px #50031a;color:#ffffff;" >极酷Flvplayer播放器,更多例子请访问:<br /></div>
 <script type="text/javascript" src="/static/swfobject.js"></script>
 <script type="text/javascript">
 	var s5 = new SWFObject("/static/FlvPlayer201002.swf","playlist","300","210","7");
@@ -15,4 +15,10 @@
 	s5.addVariable("height","600");
 	s5.write("player5");
 </script>
+        <div class="con_center" >
+            {% include 'comment/comment.html' %}
+        </div>
+    <div class="con_center" >
+            {% include 'comment/commentlist.html' %}
+        </div>
 {% endblock %}

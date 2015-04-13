@@ -3,10 +3,11 @@
         <title>投票列表——依子轩管理</title>
 {% endblock  %}
 {% block content %}
+    <div class="con_center" >
 <div id="player5" style="width:800px;height: 600px; margin:0px; border:solid 5px #50031a;color:#ffffff;" >极酷Flvplayer播放器,更多例子请访问:<br /></div>
 <script type="text/javascript" src="/static/swfobject.js"></script>
 <script type="text/javascript">
-	var s5 = new SWFObject("/static/FlvPlayer201002.swf","playlist","300","210","7");
+	var s5 = new SWFObject("/static/FlvPlayer201002.swf","playlist","800","600","7");
 	s5.addParam("allowfullscreen","true");
 	s5.addVariable("autostart","true");
 	s5.addVariable("image","flashM-cebbank.jpg");
@@ -21,4 +22,5 @@
     <div class="con_center" >
             {% include 'comment/commentlist.html' %}
         </div>
+    </div>
 {% endblock %}

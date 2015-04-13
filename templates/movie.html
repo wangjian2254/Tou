@@ -3,6 +3,7 @@
         <title>投票列表——依子轩管理</title>
 {% endblock  %}
 {% block content %}
+    <div class="con_center" >
     <video src="{{ movie.movie.url }}" width="800" height="600" controls="controls">您的浏览器不支持此种视频格式，试一试 Chrome 、360急速模式、搜狗急速模式。</video>
 
     <div class="con_center" >
@@ -11,4 +12,5 @@
     <div class="con_center" >
             {% include 'comment/commentlist.html' %}
         </div>
+    </div>
 {% endblock %}
